@@ -11,6 +11,29 @@ def symbols():
     return ["r", "y", "g", "b", "o"]
 
 
+def test_case_from_playthrough() -> None:
+    symbols = ["g", "y", "b", "r", "w"]
+    expected = ["w", "y", "r", "w", "r"]
+    seed = 666
+
+    expected_guesses = [
+        ["b", "w", "w", "r", "r"],
+        ["r", "b", "w", "w", "w"],
+        ["y", "r", "b", "r", "w"],
+        ["r", "w", "r", "g", "b"],
+    ]
+    register_results = [(1, 3), (1, 2), (0, 4), (1, 2)]
+
+    solver = PuzzleSolver(symbols, seed)
+
+    for exp_guess, exp_results in zip(expected_guesses, register_results):
+        assert exp_guess == solver.next_guess()
+        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+    output = solver.next_guess()
+
+    assert output == expected
+
+
 def test_case1(symbols) -> None:
     expected = ["g", "b", "b", "g", "r"]
     seed = 31638
