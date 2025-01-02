@@ -3,23 +3,24 @@
 
 import random
 from dataclasses import dataclass
+from itertools import product
 
 
 @dataclass
 class CaseRegister:
-    symbols: list[str]
+    symbols: tuple[str, ...]
     full_match: int = 0
     partial_match: int = 0
 
 
 class PuzzleSolver:
-    symbols: list[str]
+    symbols: tuple[str, ...]
     size: int
     seed: int
     possibilities: list[list[str]]
     register: list[CaseRegister]
 
-    def __init__(self, symbols: list[str], seed: int = None):
+    def __init__(self, symbols: tuple[str, ...], seed: int = None):
         self.symbols = symbols
         self.size = len(symbols)
         assert self.size > 1
@@ -27,19 +28,10 @@ class PuzzleSolver:
         self.seed = random.randint(0, 99999) if seed is None else seed
         random.seed(self.seed)
 
-        self.possibilities = self.generate_all_possibilities(self.size, self.symbols)
+        self.possibilities = list(product(self.symbols, repeat=self.size))
         self.register: list[CaseRegister] = []
 
-    def generate_all_possibilities(self, size: int, items: list[str]) -> None:
-        assert size >= 1
-
-        if size == 1:
-            return [[symbol] for symbol in items]
-
-        suffixes = self.generate_all_possibilities(size - 1, items)
-        return [[symbol] + suffix for symbol in items for suffix in suffixes]
-
-    def next_guess(self) -> list[str]:
+    def next_guess(self) -> tuple[str, ...]:
         while self.possibilities:
             next_guess = self.possibilities.pop(
                 random.randint(0, len(self.possibilities) - 1)
@@ -48,7 +40,7 @@ class PuzzleSolver:
                 return next_guess
         return None
 
-    def guess_contradicts_register(self, guess):
+    def guess_contradicts_register(self, guess) -> bool:
         for case in self.register:
             partial_matches, full_matches = self.judge_guess(guess, case.symbols)
             if partial_matches != case.full_match:
