@@ -3,7 +3,7 @@
 
 import pytest
 
-from solver import PuzzleSolver
+from solver import PuzzleSolver, Score
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def test_case_from_playthrough(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected
@@ -49,7 +49,7 @@ def test_case1(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected
@@ -70,7 +70,7 @@ def test_case2(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected
@@ -93,7 +93,7 @@ def test_case3(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected
@@ -113,7 +113,7 @@ def test_case4(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected
@@ -135,7 +135,7 @@ def test_case5(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected
@@ -157,7 +157,7 @@ def test_case6(symbols) -> None:
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.next_guess()
-        assert not solver.evaluate_guess_results(exp_guess, *exp_results)
+        assert not solver.evaluate_guess_results(exp_guess, Score(*exp_results))
     output = solver.next_guess()
 
     assert output == expected

@@ -7,18 +7,26 @@ from itertools import product
 
 
 @dataclass
-class CaseRegister:
-    symbols: tuple[str, ...]
+class Score:
     full_match: int = 0
     partial_match: int = 0
+
+
+@dataclass
+class GuessResults:
+    sequence: tuple[str, ...]
+    score: Score
+
+    def __repr__(self):
+        return str(self.sequence)
 
 
 class PuzzleSolver:
     symbols: tuple[str, ...]
     size: int
     seed: int
-    possibilities: list[list[str]]
-    register: list[CaseRegister]
+    permutations: list[tuple[str, ...]]
+    registers: list[GuessResults]
 
     def __init__(self, symbols: tuple[str, ...], seed: int = None):
         self.symbols = symbols
@@ -28,62 +36,68 @@ class PuzzleSolver:
         self.seed = random.randint(0, 99999) if seed is None else seed
         random.seed(self.seed)
 
-        self.possibilities = list(product(self.symbols, repeat=self.size))
-        self.register: list[CaseRegister] = []
+        self.permutations: list[tuple[str, ...]] = list(
+            product(self.symbols, repeat=self.size)
+        )
+        self.registers: list[GuessResults] = []
 
     def next_guess(self) -> tuple[str, ...]:
-        while self.possibilities:
-            next_guess = self.possibilities.pop(
-                random.randint(0, len(self.possibilities) - 1)
-            )
-            if not self.guess_contradicts_register(next_guess):
+        while self.permutations:
+            selected_random_position = random.randint(0, len(self.permutations) - 1)
+            next_guess = self.permutations.pop(selected_random_position)
+            if self.guess_respects_registered_entries_data(next_guess):
                 return next_guess
         return None
 
-    def guess_contradicts_register(self, guess) -> bool:
-        for case in self.register:
-            partial_matches, full_matches = self.judge_guess(guess, case.symbols)
-            if partial_matches != case.full_match:
-                return True
-            if full_matches != case.partial_match:
-                return True
-        return False
+    def guess_respects_registered_entries_data(self, guess: tuple[str, ...]) -> bool:
+        for register in self.registers:
+            score = self.comparation_score(guess, register.sequence)
+            if score.full_match != register.score.full_match:
+                return False
+            if score.partial_match != register.score.partial_match:
+                return False
+        return True
+
+    def comparation_score(
+        self, current_seq: list[str], reference_seq: list[str]
+    ) -> Score:
+        full_matches = 0
+        partial_matches = 0
+        remaning_reference_symbols = []
+        remaning_current_symbols = []
+        for current_symbol, reference_symbol in zip(current_seq, reference_seq):
+            if current_symbol == reference_symbol:
+                full_matches += 1
+            else:
+                remaning_reference_symbols.append(current_symbol)
+                remaning_current_symbols.append(reference_symbol)
+
+        for reference_symbol in remaning_reference_symbols:
+            if reference_symbol in remaning_current_symbols:
+                partial_matches += 1
+                remaning_current_symbols.remove(reference_symbol)
+
+        return Score(full_matches, partial_matches)
+
+    def ask_results_to_user(self, guess) -> Score:
+        base_msg = "Enter number of correct symbols in {} positions: "
+        full_match = int(input(base_msg.format("correct")) or 0)
+        if full_match == self.size:
+            return Score(full_match, 0)
+        partial_match = int(input(base_msg.format("wrong")) or 0)
+        return Score(full_match, partial_match)
 
     def evaluate_guess_results(
-        self, guess, both_good: int | None = None, symbol_good: int | None = None
+        self, guess: tuple[str, ...], score: Score | None = None
     ) -> bool:
-        base_msg = "Enter number of correct symbols in {} positions: "
+        if score is None:
+            score = self.ask_results_to_user(guess)
 
-        if both_good is None:
-            both_good = int(input(base_msg.format("correct")) or 0)
-
-        if both_good == self.size:
+        if score.full_match == self.size:
             return True
 
-        if symbol_good is None:
-            symbol_good = int(input(base_msg.format("wrong")) or 0)
-
-        self.register.append(CaseRegister(guess, both_good, symbol_good))
+        self.registers.append(GuessResults(guess, score))
         return False
-
-    def judge_guess(self, answer: list[str], guess: list[str]) -> tuple[int, int]:
-        full_match = 0
-        partial_match = 0
-        unacounted_answers = []
-        unacounted_guesses = []
-        for a, g in zip(answer, guess):
-            if a == g:
-                full_match += 1
-            else:
-                unacounted_answers.append(a)
-                unacounted_guesses.append(g)
-
-        for ua in unacounted_answers:
-            if ua in unacounted_guesses:
-                partial_match += 1
-                unacounted_guesses.remove(ua)
-
-        return (full_match, partial_match)
 
     def solve(self) -> None:
         while True:
