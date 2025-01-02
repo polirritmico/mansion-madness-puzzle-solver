@@ -95,7 +95,7 @@ class PuzzleSolver:
 
         self.registers.append(GuessResults(guess, score))
 
-    def is_solved(self) -> bool:
+    def check_last_guess_solution(self) -> bool:
         last_register = self.registers[-1]
         return last_register.score.full_match == self.size
 
@@ -107,14 +107,16 @@ class PuzzleSolver:
                 break
             print(f"Next guess: {',  '.join(guess)}")
 
-            if self.register_results(guess):
+            self.register_results(guess)
+
+            puzzle_is_solved = self.check_last_guess_solution()
+            if puzzle_is_solved:
                 print("Solved!")
                 break
 
 
 if __name__ == "__main__":
     print("Mansion of Madness Puzzle Solver")
-    # symbols = input("Enter symbols (comma-separated): ").split(",")
 
     # Mastermind style
     # symbols = ["r", "y", "g", "b", "o"]
