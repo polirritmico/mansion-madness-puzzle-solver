@@ -11,6 +11,9 @@ class Score:
     full_match: int = 0
     partial_match: int = 0
 
+    def __repr__(self):
+        return f"({self.full_match}, {self.partial_match})"
+
 
 @dataclass
 class GuessResults:
@@ -58,28 +61,27 @@ class PuzzleSolver:
                 return False
         return True
 
-    def comparation_score(
-        self, current_seq: list[str], reference_seq: list[str]
-    ) -> Score:
+    def comparation_score(self, current: list[str], reference: list[str]) -> Score:
         full_matches = 0
         partial_matches = 0
-        remaning_reference_symbols = []
-        remaning_current_symbols = []
-        for current_symbol, reference_symbol in zip(current_seq, reference_seq):
+        reference_symbols_in_wrong_position = []
+        current_symbols_in_wrong_position = []
+
+        for current_symbol, reference_symbol in zip(current, reference):
             if current_symbol == reference_symbol:
                 full_matches += 1
             else:
-                remaning_reference_symbols.append(current_symbol)
-                remaning_current_symbols.append(reference_symbol)
+                reference_symbols_in_wrong_position.append(reference_symbol)
+                current_symbols_in_wrong_position.append(current_symbol)
 
-        for reference_symbol in remaning_reference_symbols:
-            if reference_symbol in remaning_current_symbols:
+        for current_symbol in current_symbols_in_wrong_position:
+            if current_symbol in reference_symbols_in_wrong_position:
                 partial_matches += 1
-                remaning_current_symbols.remove(reference_symbol)
+                reference_symbols_in_wrong_position.remove(current_symbol)
 
         return Score(full_matches, partial_matches)
 
-    def ask_results_to_user(self, guess) -> Score:
+    def ask_results_to_user(self) -> Score:
         base_msg = "Enter number of correct symbols in {} positions: "
         full_match = int(input(base_msg.format("correct")) or 0)
         if full_match == self.size:
@@ -87,17 +89,15 @@ class PuzzleSolver:
         partial_match = int(input(base_msg.format("wrong")) or 0)
         return Score(full_match, partial_match)
 
-    def evaluate_guess_results(
-        self, guess: tuple[str, ...], score: Score | None = None
-    ) -> bool:
+    def register_results(self, guess: tuple[str, ...], score: Score | None = None):
         if score is None:
-            score = self.ask_results_to_user(guess)
-
-        if score.full_match == self.size:
-            return True
+            score = self.ask_results_to_user()
 
         self.registers.append(GuessResults(guess, score))
-        return False
+
+    def is_solved(self) -> bool:
+        last_register = self.registers[-1]
+        return last_register.score.full_match == self.size
 
     def solve(self) -> None:
         while True:
@@ -107,7 +107,7 @@ class PuzzleSolver:
                 break
             print(f"Next guess: {',  '.join(guess)}")
 
-            if self.evaluate_guess_results(guess):
+            if self.register_results(guess):
                 print("Solved!")
                 break
 
