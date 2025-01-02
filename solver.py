@@ -99,13 +99,35 @@ class PuzzleSolver:
         last_register = self.registers[-1]
         return last_register.score.full_match == self.size
 
-    def solve(self) -> None:
+    def print_guess(self, sequence: tuple[str, ...], colors: bool) -> None:
+        if not colors:
+            print("Next gues: " + ", ".join(sequence))
+            return
+
+        color_map = {
+            "o": "\033[1m\033[38;5;214m",  # Orange
+            "r": "\033[1m\033[31m",  # Red
+            "y": "\033[1m\033[93m",  # Yellow
+            "g": "\033[1m\033[32m",  # Green
+            "b": "\033[1m\033[96m",  # Blue (light)
+            "w": "\033[1m\033[97m",  # Grey (light)
+            "_": "\033[0m",  # No style/reset ]]]]]]]]]]]]]
+        }
+        res = []
+        for symbol in sequence:
+            if symbol in color_map:
+                symbol_char = f"{color_map[symbol]}{symbol.upper()}{color_map["_"]}"
+                res.append(symbol_char)
+
+        print("Next gues: " + ", ".join(res))
+
+    def solve(self, colors: bool = True) -> None:
         while True:
             guess = self.next_guess()
             if guess is None:
                 print("No more possible guesses. Probably an error in your inputs.")
                 break
-            print(f"Next guess: {',  '.join(guess)}")
+            self.print_guess(guess, colors)
 
             self.register_results(guess)
 
