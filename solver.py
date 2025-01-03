@@ -123,6 +123,7 @@ class PuzzleSolver:
         print("Next gues: " + ", ".join(res))
 
     def solve(self, colors: bool = True) -> None:
+        print("Solving the puzzle... (Try the guesses and insert the results)")
         while True:
             guess = self.next_guess()
             if guess is None:
