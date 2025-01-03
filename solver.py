@@ -116,7 +116,7 @@ class PuzzleSolver:
         res = []
         for symbol in sequence:
             if symbol in color_map:
-                symbol_char = f"{color_map[symbol]}{symbol.upper()}{color_map["_"]}"
+                symbol_char = f"{color_map[symbol]}{symbol.upper()}{color_map['_']}"
                 res.append(symbol_char)
 
         print("Next gues: " + ", ".join(res))
