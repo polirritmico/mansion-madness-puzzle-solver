@@ -27,17 +27,18 @@ class GuessResults:
 class PuzzleSolver:
     symbols: tuple[str, ...]
     size: int
-    seed: int
     permutations: list[tuple[str, ...]]
     registers: list[GuessResults]
 
-    def __init__(self, symbols: tuple[str, ...], seed: int = None):
+    def __init__(self, symbols: tuple[str, ...], seed: int | None = None):
         self.symbols = symbols
         self.size = len(symbols)
         assert self.size > 1
 
-        self.seed = random.randint(0, 99999) if seed is None else seed
-        random.seed(self.seed)
+        if seed is None:
+            seed = random.randint(0, 99999)
+            print(f"Using '{self.seed}' as the chaos seed")
+        random.seed(seed)
 
         self.permutations: list[tuple[str, ...]] = list(
             product(self.symbols, repeat=self.size)
@@ -148,5 +149,4 @@ if __name__ == "__main__":
     symbols = ("g", "y", "b", "r", "w")
     solver = PuzzleSolver(symbols, 666)
 
-    print(f"Using random seed: {solver.seed}")
     solver.solve()
