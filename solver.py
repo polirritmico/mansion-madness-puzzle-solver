@@ -82,7 +82,7 @@ class PuzzleSolver:
         return Score(full_matches, partial_matches)
 
     def ask_results_to_user(self) -> Score:
-        base_msg = "Enter number of correct symbols in {} positions: "
+        base_msg = "Enter number of correct symbols in {} positions: \n"
         full_match = int(input(base_msg.format("correct")) or 0)
         if full_match == self.size:
             return Score(full_match, 0)
