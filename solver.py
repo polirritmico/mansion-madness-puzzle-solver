@@ -141,11 +141,11 @@ if __name__ == "__main__":
     print("Mansion of Madness Puzzle Solver")
 
     # Mastermind style
-    # symbols = ["r", "y", "g", "b", "o"]
+    # symbols = ("r", "y", "g", "b", "o")
     # solver = PuzzleSolver(symbols)
 
     # Mansion of Madness style
-    symbols = ["g", "y", "b", "r", "w"]
+    symbols = ("g", "y", "b", "r", "w")
     solver = PuzzleSolver(symbols, 666)
 
     print(f"Using random seed: {solver.seed}")
