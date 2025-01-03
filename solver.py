@@ -37,7 +37,7 @@ class PuzzleSolver:
 
         if seed is None:
             seed = random.randint(0, 99999)
-            print(f"Using '{self.seed}' as the chaos seed")
+            print(f"Using '{seed}' as the chaos seed")
         random.seed(seed)
 
         self.permutations: list[tuple[str, ...]] = list(
