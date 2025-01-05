@@ -30,9 +30,9 @@ class PuzzleSolver:
     permutations: list[tuple[str, ...]]
     registers: list[GuessResults]
 
-    def __init__(self, symbols: tuple[str, ...], seed: int | None = None):
-        self.symbols = symbols
+    def __init__(self, symbols: list[str], seed: int | None = None):
         self.size = len(symbols)
+        self.symbols = self.remove_duplicated_symbols(symbols)
         assert self.size > 1
 
         if seed is None:
@@ -44,43 +44,56 @@ class PuzzleSolver:
             product(self.symbols, repeat=self.size)
         )
         self.registers: list[GuessResults] = []
+        self.iteration_counter = 0
 
-    def next_guess(self) -> tuple[str, ...]:
+    def remove_duplicated_symbols(self, symbols: list[str]) -> list[str]:
+        return list(dict.fromkeys(symbols))
+
+    def search_next_guess(self) -> tuple[str, ...]:
         while self.permutations:
             selected_random_position = random.randint(0, len(self.permutations) - 1)
             next_guess = self.permutations.pop(selected_random_position)
-            if self.guess_respects_registered_entries_data(next_guess):
+            if self.validate_againts_all_register_entries(next_guess):
                 return next_guess
         return None
 
-    def guess_respects_registered_entries_data(self, guess: tuple[str, ...]) -> bool:
+    def validate_againts_all_register_entries(self, guess: tuple[str, ...]) -> bool:
+        """
+        Returns `True` if the `guess` matches the same score for both full and partial
+        matches as every entry in the register, ensuring the guess is one of the valid
+        possible answers. (The larger the register, the more it narrows down the set of
+        potential correct answers)
+        """
         for register in self.registers:
-            score = self.comparation_score(guess, register.sequence)
+            self.iteration_counter += 1
+
+            score = self.score_matching_symbols(guess, register.sequence)
             if score.full_match != register.score.full_match:
                 return False
             if score.partial_match != register.score.partial_match:
                 return False
         return True
 
-    def comparation_score(self, current: list[str], reference: list[str]) -> Score:
-        full_matches = 0
-        partial_matches = 0
-        reference_symbols_in_wrong_position = []
-        current_symbols_in_wrong_position = []
+    def score_matching_symbols(self, guess: list[str], register: list[str]) -> Score:
+        full_match_score = 0
+        partial_match_score = 0
 
-        for current_symbol, reference_symbol in zip(current, reference):
-            if current_symbol == reference_symbol:
-                full_matches += 1
+        unpaired_guess_symbols = []
+        unpaired_register_symbols = []
+
+        for guess_symbol, register_symbol in zip(guess, register):
+            if guess_symbol == register_symbol:
+                full_match_score += 1
             else:
-                reference_symbols_in_wrong_position.append(reference_symbol)
-                current_symbols_in_wrong_position.append(current_symbol)
+                unpaired_guess_symbols.append(guess_symbol)
+                unpaired_register_symbols.append(register_symbol)
 
-        for current_symbol in current_symbols_in_wrong_position:
-            if current_symbol in reference_symbols_in_wrong_position:
-                partial_matches += 1
-                reference_symbols_in_wrong_position.remove(current_symbol)
+        for guess_symbol in unpaired_guess_symbols:
+            if guess_symbol in unpaired_register_symbols:
+                partial_match_score += 1
+                unpaired_register_symbols.remove(guess_symbol)
 
-        return Score(full_matches, partial_matches)
+        return Score(full_match_score, partial_match_score)
 
     def ask_results_to_user(self) -> Score:
         base_msg = "Enter number of correct symbols in {} positions: \n"
@@ -96,58 +109,64 @@ class PuzzleSolver:
 
         self.registers.append(GuessResults(guess, score))
 
-    def check_last_guess_solution(self) -> bool:
+    def check_for_solved_puzzle(self) -> bool:
         last_register = self.registers[-1]
         return last_register.score.full_match == self.size
 
-    def print_guess(self, sequence: tuple[str, ...], colors: bool) -> None:
-        if not colors:
-            print("Next gues: " + ", ".join(sequence))
-            return
-
+    def print_guess(self, sequence: tuple[str, ...]) -> None:
         color_map = {
-            "o": "\033[1m\033[38;5;214m",  # Orange
-            "r": "\033[1m\033[31m",  # Red
-            "y": "\033[1m\033[93m",  # Yellow
-            "g": "\033[1m\033[32m",  # Green
-            "b": "\033[1m\033[96m",  # Blue (light)
-            "w": "\033[1m\033[97m",  # Grey (light)
-            "_": "\033[0m",  # No style/reset ]]]]]]]]]]]]]
+            "o": "\033[1m\033[38;5;214m",  # ]] Orange
+            "r": "\033[1m\033[31m",  # ]] Red
+            "y": "\033[1m\033[93m",  # ]] Yellow
+            "g": "\033[1m\033[32m",  # ]] Green
+            "b": "\033[1m\033[96m",  # ]] Blue (light)
+            "w": "\033[1m\033[97m",  # ]]Grey (light)
+            "_": "\033[0m",  # ]] No style/reset
         }
         res = []
         for symbol in sequence:
             if symbol in color_map:
-                symbol_char = f"{color_map[symbol]}{symbol.upper()}{color_map['_']}"
-                res.append(symbol_char)
+                symbol = f"{color_map[symbol]}{symbol.upper()}{color_map['_']}"
+            res.append(symbol)
 
-        print("Next gues: " + ", ".join(res))
+        print("Next guess: " + ", ".join(res))
 
-    def solve(self, colors: bool = True) -> None:
-        print("Solving the puzzle... (Try the guesses and insert the results)")
+    def solve(self) -> None:
+        print("Solving the puzzle... (Try each guess and insert the results)")
         while True:
-            guess = self.next_guess()
+            guess = self.search_next_guess()
             if guess is None:
                 print("No more possible guesses. Probably an error in your inputs.")
                 break
-            self.print_guess(guess, colors)
+            self.print_guess(guess)
 
             self.register_results(guess)
 
-            puzzle_is_solved = self.check_last_guess_solution()
-            if puzzle_is_solved:
+            if self.check_for_solved_puzzle():
                 print("Solved!")
                 break
 
 
-if __name__ == "__main__":
+def main():
     print("Mansion of Madness Puzzle Solver")
 
     # Mastermind style
-    # symbols = ("r", "y", "g", "b", "o")
+    # symbols = ["r", "y", "g", "b", "o"]
     # solver = PuzzleSolver(symbols)
 
     # Mansion of Madness style
-    symbols = ("g", "y", "b", "r", "w")
+    symbols = ["g", "y", "b", "r", "w"]
     solver = PuzzleSolver(symbols, 666)
 
     solver.solve()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Program interrupted by the user.")
+    except Exception as e:
+        print(f"An error occurred: {type(e).__name__}")
+    finally:
+        print("Closing...")
