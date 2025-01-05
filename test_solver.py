@@ -11,6 +11,51 @@ def symbols():
     return ("g", "y", "b", "r", "w")
 
 
+def test_algorithm_implementation() -> None:
+    symbols = ["1", "2", "3"]
+    answer = ("3", "1", "1")
+    seed = 1
+
+    guess_results = ((0, 1), (2, 0), (5, 0))
+
+    solver = PuzzleSolver(symbols, seed)
+    output = ()
+
+    for result in guess_results:
+        output = solver.search_next_guess()
+        solver.register_results(output, Score(*result))
+
+    assert output == answer
+
+
+def test_algorithm_implementation() -> None:
+    symbols = ["1", "2", "3"]
+    answer = ("1", "2", "1")
+    seed = 1
+
+    guess_results = ((2, 0), (2, 0), (5, 0))
+
+    solver = PuzzleSolver(symbols, seed)
+    output = ()
+
+    for result in guess_results:
+        output = solver.search_next_guess()
+        solver.register_results(output, Score(*result))
+
+    assert output == answer
+
+
+def test_repeated_symbols_from_input() -> None:
+    symbols = ["1", "2", "2", "2", "2"]
+    expected_size = 5
+    expected_symbols = ["1", "2"]
+
+    solver = PuzzleSolver(symbols)
+
+    assert expected_size == solver.size
+    assert expected_symbols == solver.symbols
+
+
 def test_case_from_playthrough(symbols) -> None:
     expected = ("w", "y", "r", "w", "r")
     seed = 666
@@ -26,10 +71,10 @@ def test_case_from_playthrough(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
 
@@ -49,10 +94,10 @@ def test_case1(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
 
@@ -71,10 +116,10 @@ def test_case2(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
 
@@ -95,10 +140,10 @@ def test_case3(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
 
@@ -116,10 +161,10 @@ def test_case4(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
 
@@ -139,10 +184,10 @@ def test_case5(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
 
@@ -162,9 +207,9 @@ def test_case6(symbols) -> None:
     solver = PuzzleSolver(symbols, seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
-        assert exp_guess == solver.next_guess()
+        assert exp_guess == solver.search_next_guess()
         solver.register_results(exp_guess, Score(*exp_results))
-        assert not solver.check_last_guess_solution()
-    output = solver.next_guess()
+        assert not solver.check_for_solved_puzzle()()
+    output = solver.search_next_guess()
 
     assert output == expected
