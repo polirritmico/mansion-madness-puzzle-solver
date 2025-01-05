@@ -30,10 +30,13 @@ class PuzzleSolver:
     permutations: list[tuple[str, ...]]
     registers: list[GuessResults]
 
-    def __init__(self, symbols: list[str], seed: int | None = None):
-        self.size = len(symbols)
+    def __init__(
+        self, symbols: list[str], seed: int | None = None, size: int | None = None
+    ):
+        self.size = len(symbols) if size is None else size
         self.symbols = self.remove_duplicated_symbols(symbols)
         assert self.size > 1
+        assert len(symbols) > 1
 
         if seed is None:
             seed = random.randint(0, 99999)
@@ -156,7 +159,7 @@ def main():
 
     # Mansion of Madness style
     symbols = ["g", "y", "b", "r", "w"]
-    solver = PuzzleSolver(symbols, 666)
+    solver = PuzzleSolver(symbols, seed=666, size=5)
 
     solver.solve()
 
