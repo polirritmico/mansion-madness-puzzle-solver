@@ -98,23 +98,29 @@ class PuzzleSolver:
 
         return Score(full_match_score, partial_match_score)
 
-    def ask_results_to_user(self) -> Score:
-        base_msg = "Enter number of correct symbols in {} positions: \n"
-        full_match = int(input(base_msg.format("correct")) or 0)
-        if full_match == self.size:
-            return Score(full_match, 0)
-        partial_match = int(input(base_msg.format("wrong")) or 0)
-        return Score(full_match, partial_match)
-
-    def register_results(self, guess: tuple[str, ...], score: Score | None = None):
-        if score is None:
-            score = self.ask_results_to_user()
-
+    def register_results(self, guess: tuple[str, ...], score: Score):
         self.registers.append(GuessResults(guess, score))
 
     def check_for_solved_puzzle(self) -> bool:
         last_register = self.registers[-1]
         return last_register.score.full_match == self.size
+
+    def ask_results_to_user(self) -> Score:
+        base_msg = "Enter number of correct symbols in {} positions: \n"
+        full_match = self.get_valid_input_integer(base_msg.format("correct"))
+        if full_match == self.size:
+            return Score(full_match, 0)
+        partial_match = self.get_valid_input_integer(base_msg.format("wrong"))
+
+        return Score(full_match, partial_match)
+
+    def get_valid_input_integer(self, msg: str) -> int:
+        while True:
+            raw_input = input(msg)
+            if raw_input.isdecimal() and 0 <= int(raw_input) <= self.size:
+                return int(raw_input)
+            else:
+                print("Invalid input. Please try again.")
 
     def print_guess(self, sequence: tuple[str, ...]) -> None:
         color_map = {
@@ -143,8 +149,8 @@ class PuzzleSolver:
                 break
             self.print_guess(guess)
 
-            self.register_results(guess)
-
+            score = self.ask_results_to_user()
+            self.register_results(guess, score)
             if self.check_for_solved_puzzle():
                 print("Solved!")
                 break
