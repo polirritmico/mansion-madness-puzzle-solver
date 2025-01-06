@@ -135,7 +135,7 @@ class PuzzleSolver:
         print("Next guess: " + ", ".join(res))
 
     def solve(self) -> None:
-        print("Solving the puzzle... (Try each guess and insert the results)")
+        print("Solving the puzzle... (Try each guess and insert the results)\n")
         while True:
             guess = self.search_next_guess()
             if guess is None:
@@ -151,17 +151,32 @@ class PuzzleSolver:
 
 
 def main():
-    print("Mansion of Madness Puzzle Solver")
+    def user_input(msg, default, cast_fn=int) -> any:
+        raw_input = input(f"{msg} (default '{str(default)}'): ").replace(" ", "")
+        return cast_fn(raw_input if raw_input else default)
+
+    def symbols_parser(raw: str) -> list[str]:
+        assert isinstance(raw, str)
+        return raw.split(",")
+
+    print("🪦 [Mansion of Madness Puzzle Solver] 📚🔯")
+    print("------------------------------------------")
+
+    seed = user_input("Enter the chaos seed value", 666)
+    size = user_input("Enter the puzzle size value", 5)
+    symbols = user_input(
+        "Enter the symbols list (comma-separated)", "g,y,b,r,w", symbols_parser
+    )
+
+    print("------------------------------------------")
+
+    solver = PuzzleSolver(symbols, seed, size)
+    solver.solve()
 
     # Mastermind style
     # symbols = ["r", "y", "g", "b", "o"]
     # solver = PuzzleSolver(symbols)
-
-    # Mansion of Madness style
-    symbols = ["g", "y", "b", "r", "w"]
-    solver = PuzzleSolver(symbols, seed=666, size=5)
-
-    solver.solve()
+    # solver.solver()
 
 
 if __name__ == "__main__":
