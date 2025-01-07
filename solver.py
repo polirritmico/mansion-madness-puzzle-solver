@@ -31,7 +31,7 @@ class PuzzleSolver:
     registers: list[GuessResults]
 
     def __init__(
-        self, symbols: list[str], seed: int | None = None, size: int | None = None
+        self, symbols: list[str], size: int | None = None, seed: int | None = None
     ):
         self.size = len(symbols) if size is None else size
         self.symbols = self.remove_duplicated_symbols(symbols)
@@ -180,7 +180,7 @@ def main():
 
     print("------------------------------------------")
 
-    solver = PuzzleSolver(symbols, seed, size)
+    solver = PuzzleSolver(symbols, size, seed)
     solver.solve()
 
     # Mastermind style
