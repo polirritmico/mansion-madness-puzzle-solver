@@ -47,7 +47,6 @@ class PuzzleSolver:
             product(self.symbols, repeat=self.size)
         )
         self.registers: list[GuessResults] = []
-        self.iteration_counter = 0
 
     def remove_duplicated_symbols(self, symbols: list[str]) -> list[str]:
         return list(dict.fromkeys(symbols))
@@ -68,8 +67,6 @@ class PuzzleSolver:
         potential correct answers)
         """
         for register in self.registers:
-            self.iteration_counter += 1
-
             score = self.score_matching_symbols(guess, register.sequence)
             if score.full_match != register.score.full_match:
                 return False
