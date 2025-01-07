@@ -18,7 +18,7 @@ def test_algorithm_implementation_case1() -> None:
 
     guess_results = ((0, 1), (2, 0), (5, 0))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
     output = ()
 
     for result in guess_results:
@@ -35,7 +35,7 @@ def test_algorithm_implementation_case2() -> None:
 
     guess_results = ((2, 0), (2, 0), (5, 0))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
     output = ()
 
     for result in guess_results:
@@ -68,7 +68,7 @@ def test_case_from_playthrough(symbols) -> None:
     )
     register_results = ((1, 3), (1, 2), (0, 4), (1, 2))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
@@ -91,7 +91,7 @@ def test_case1(symbols) -> None:
     )
     register_results = ((1, 1), (1, 1), (2, 1), (2, 2))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
@@ -113,7 +113,7 @@ def test_case2(symbols) -> None:
     )
     register_results = ((1, 0), (0, 2), (4, 0))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
@@ -137,7 +137,7 @@ def test_case3(symbols) -> None:
     )
     register_results = ((0, 3), (1, 3), (0, 3), (1, 2), (2, 1))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
@@ -158,7 +158,7 @@ def test_case4(symbols) -> None:
     )
     register_results = ((1, 1), (1, 0))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
@@ -181,7 +181,7 @@ def test_case5(symbols) -> None:
     )
     register_results = ((1, 1), (0, 2), (3, 0), (2, 0))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
@@ -204,7 +204,7 @@ def test_case6(symbols) -> None:
     )
     register_results = ((1, 2), (1, 1), (1, 2), (2, 2))
 
-    solver = PuzzleSolver(symbols, seed)
+    solver = PuzzleSolver(symbols, seed=seed)
 
     for exp_guess, exp_results in zip(expected_guesses, register_results):
         assert exp_guess == solver.search_next_guess()
