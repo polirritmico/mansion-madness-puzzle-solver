@@ -107,17 +107,21 @@ class PuzzleSolver:
 
     def ask_results_to_user(self) -> Score:
         base_msg = "Enter number of correct symbols in {} positions: \n"
-        full_match = self.get_valid_input_integer(base_msg.format("correct"))
+
+        msg = base_msg.format("correct")
+        full_match = self.get_valid_input_integer(msg, self.size)
         if full_match == self.size:
             return Score(full_match, 0)
-        partial_match = self.get_valid_input_integer(base_msg.format("wrong"))
+
+        msg = base_msg.format("wrong")
+        partial_match = self.get_valid_input_integer(msg, self.size - full_match)
 
         return Score(full_match, partial_match)
 
-    def get_valid_input_integer(self, msg: str) -> int:
+    def get_valid_input_integer(self, msg: str, max_value: int) -> int:
         while True:
             raw_input = input(msg)
-            if raw_input.isdecimal() and 0 <= int(raw_input) <= self.size:
+            if raw_input.isdecimal() and 0 <= int(raw_input) <= max_value:
                 return int(raw_input)
             else:
                 print("Invalid input. Please try again.")
