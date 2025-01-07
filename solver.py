@@ -158,14 +158,10 @@ class PuzzleSolver:
 
 
 def main():
-    def get_user_input(msg, default, cast_fn=int) -> any:
+    def get_user_input(msg: str, default: str, cast_fn=int) -> int | list[str]:
         msg_with_defaults = f"{msg} (default '{default}'): "
-        user_input = input(msg_with_defaults).replace(" ", "")
+        user_input: str = input(msg_with_defaults).replace(" ", "")
         return cast_fn(user_input if user_input else default)
-
-    def symbols_parser(raw: str) -> list[str]:
-        assert isinstance(raw, str)
-        return raw.split(",")
 
     print("🪦 [Mansion of Madness Puzzle Solver] 📚🔯")
     print("------------------------------------------")
@@ -173,18 +169,15 @@ def main():
     seed = get_user_input("Enter the chaos seed value", "666")
     size = get_user_input("Enter the puzzle size value", "5")
     symbols = get_user_input(
-        "Enter the symbols list (comma-separated)", "g,y,b,r,w", symbols_parser
+        "Enter the symbols list (comma-separated)",
+        "g,y,b,r,w",  # Alternative Mastermind style: "r,y,g,b,o,p"
+        lambda input_str: input_str.split(","),
     )
 
     print("------------------------------------------")
 
     solver = PuzzleSolver(symbols, size, seed)
     solver.solve()
-
-    # Mastermind style
-    # symbols = ["r", "y", "g", "b", "o"]
-    # solver = PuzzleSolver(symbols)
-    # solver.solver()
 
 
 if __name__ == "__main__":
